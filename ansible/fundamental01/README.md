@@ -128,7 +128,7 @@ KeyとValueの境には**:**と**スペース**を挿入します。
 ```
 上の例では*朝ごはん*というkeyを指定すると[パン、牛乳、ヨーグルト、フルーツ]全てが値として取得できます。JSONで表すと以下のようになります。
 
-```
+```json
 {
   "朝ごはん": [
     "パン",
@@ -380,7 +380,7 @@ JSON形式でこのYAMLを変換すると、
 
 JSON形式に直すと以下のようになります。
 
-```
+```json
 [
   {
     "hosts": "scapegoats",
@@ -435,7 +435,7 @@ PLAY RECAP *********************************************************************
 実際にAnsibleがデフォルトで実行するGather Factsタスクからの情報を利用してPlaybookを描き直してみましょう。scapegoatsグループに記載したサーバーのOSディストリビューション**以外**はpingタスクを実行させることにします。期待する結果はGather Factsタスクのみ実行で*ok=1*となるでしょう。 私の環境ではscapegotsグループに入れた自動化対象サーバーはUbuntuなので、Ubuntu以外のOSの場合のみpingタスクを実行させるようにします。  
 **when**という構文を使うことで、条件を指定できます。*ansible -i inventory/scapegoats  -m setup scapegoats*の実行結果から、*TASK \[Gathering Facts\]*で*"ansible_distribution": "Ubuntu"*という情報を取得していることがわかりました。この情報を使ってタスクの実行条件を以下のように指定あげます。自身の環境に合わせてOSディストリビューション名を設定してください。
 
-```
+```yaml
 ---
 - hosts: scapegoats
   tasks:
@@ -483,7 +483,7 @@ Ansibleは自動化対象のサーバーにPythonがインストールされて�
 2行目で*gather\_facts: false*と指定して、Gather Factsタスクをあえて実行しないようにしています。  
 **register**構文はモジュールの出力を保存するときに使う構文となり、Valueにその出力を呼び出すためのKey名を指定します。今回の例だと*result*というkeyを指定することでpingモジュールが出力した情報を後から参照できるようになります。  
 次に「pingモジュールの実行結果詳細」という新しいタスクが増えていることがわかります。**[debug](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/debug_module.html)**モジュールを使って、*result*のValueを画面出力させようとしています。  
-*{{ result }}*という記載方法は、Ansibleの世界では変数を文字列として展開することを示します。(厳密にはJinja2の世界)  
+*{{ result }}*という記載方法は、Ansibleの世界では変数(key)に格納されている値(value)を展開することを示します。(厳密にはJinja2の世界)  
 では実行してみます。
 
 
@@ -531,7 +531,7 @@ cp: omitting directory ‘playbook01/inventory/’
 
 userモジュールを使ったPlaybookは以下となります。pingモジュールを使ったPlaybookとさほど変わらないことがわかると思います。作成するユーザー名はお好きな名前を指定していただいて構わないです。
 
-```
+```yaml
 ---
 - hosts: scapegoats
   tasks:
@@ -601,7 +601,7 @@ Infrastructure as Codeの世界では**冪等性**が重要となります。冪
 #### 繰り返し(Loop)と変数
 今、1人のユーザーを作成しましたが、ansible-user01~ansible-user05まで作成したい場合はどうしますか？以下の例のように同じようなタスクを羅列して記載しても良いですが可読性が悪いですし、メンテナンス性も悪くなります。数行で記載したほうがわかりやすく芸術的と考えます。
 
-```
+```yaml
 ---
 - hosts: scapegoats
   tasks:
@@ -647,8 +647,8 @@ Infrastructure as Codeの世界では**冪等性**が重要となります。冪
       with_items: "{{ scapegoats_users }}"
 ```
 3行目**vars**構文はPlaybook作者が変数を定義したい場合に使います。今回の例では*scapegoats\_users*というkeyに対してのvalueは作成したいユーザーのリストを指定しています。  
-tasks内のユーザー作成タスク最終行を見てください。**with\_items**という構文を使っています。この構文は**与えられたリストの要素分タスクを実行する**構文になります。与えるリストは先ほど*vars*内に記載した*scapegoats\_users*というkeyがもつユーザーのリスト(value)です。先述の通り、Ansibleでは*"{{ 変数名(Key名) }}"*でその値(Value)が取得できるので、今回の例では*"{{ scapegoats\_users }}"*を指定しています。  
-少し行を戻って、*name: "{{ item }}"*は*with\_items*にセットされたリストの要素１つ１つが順番に入ります。  
+tasks内のユーザー作成タスク最終行を見てください。**with\_items**という構文を使っています。この構文は**与えられたリストの要素分タスクを実行する**構文になります。与えるリストは先ほど*vars*内に記載した*scapegoats\_users*というkeyがもつユーザーのリスト(value)です。先述の通り、Ansibleでは*\"{{ 変数名(Key名) }\"*でその値(Value)が取得できるので、今回の例では*\"{{ scapegoats\_users }}\"*を指定しています。  
+少し行を戻って、*name: \"{{ item }}\"*は*with\_items*にセットされたリストの要素１つ１つが順番に入ります。  
 つまり、このユーザー作成タスク１つでuserモジュールは５回実行されることになります。実際にやってみましょう。
 
 
