@@ -3,3 +3,4 @@
 
 ## 目次
 - [Ansible](ansible)
+- [VMware](vmware)
