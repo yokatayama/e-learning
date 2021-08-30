@@ -716,18 +716,13 @@ kube-system   vsphere-csi-node-zxnh9                                    3/3     
 tkg-system    kapp-controller-5df5988d77-bdbzw                          1/1     Running   0          45m
 ```
 
-無事にノード情報と稼働Pod情報を取得できました。ちなみにManagement Clusterのkubeconfigに戻したいときはクラスタ名とユーザー名を確認したのち、以下のような手順で戻せます。
+無事にノード情報と稼働Pod情報を取得できました。ちなみにManagement Clusterのkubeconfigに戻したいときは以下のような手順で戻せます。
 
 ```bash
-> kubectl config get-clusters
-NAME
-takluster01
-tkg-mgmt-vsphere-20210830120158
-
-> kubectl config get-users
-NAME
-takluster01-admin
-tkg-mgmt-vsphere-20210830120158-admin
+> kubectl config get-contexts
+CURRENT   NAME                                                                    CLUSTER                           AUTHINFO                                NAMESPACE
+*         takluster01-admin@takluster01                                           takluster01                       takluster01-admin
+          tkg-mgmt-vsphere-20210830120158-admin@tkg-mgmt-vsphere-20210830120158   tkg-mgmt-vsphere-20210830120158   tkg-mgmt-vsphere-20210830120158-admin
 
 > kubectl config use-context tkg-mgmt-vsphere-20210830120158-admin@tkg-mgmt-vsphere-20210830120158
 Switched to context "tkg-mgmt-vsphere-20210830120158-admin@tkg-mgmt-vsphere-20210830120158".
