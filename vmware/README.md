@@ -1,4 +1,6 @@
 # VMware
+このレポジトリではVMware関連のナレッジをまとめています。
+
 ## 目次
 ### Tanzu Kubernetes Grid(TKG)
 - [VMware Tanzu Kubernetes GridをHPE ProLiantにインストール](tkg/installation)  
