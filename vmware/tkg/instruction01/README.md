@@ -11,7 +11,7 @@
 
 ## 注意事項
 - 本章では筆者が*kubectl*コマンドを打ちすぎて腱鞘炎になりつつあるので、*kubectl*コマンドのエイリアスを*k*として入力しています
-- *kubectl*実行端末はMacOSからとなっていますので、適時自身の環境にあったコマンドに読み替えてください
+- *kubectl*実行端末はMacOSからとなっていますので、適宜自身の環境にあったコマンドに読み替えてください
 
 ## Nginx Webサーバーを公開してみよう
 ありきたりですが、Nginx Web Serverを公開するという目的を掲げた上で色々と触ってみます。
@@ -68,7 +68,7 @@ spec:
 
 
 ```
-➜  manifests git:(dev) ✗ k apply -f deployment01.yaml 
+➜  manifests git:(dev) ✗ k apply -f deployment01.yaml
 deployment.apps/nginx created
 ```
 
@@ -131,7 +131,7 @@ Node Port: 32262がアサインされたので、そこに対してHTTPアクセ
 本検証環境ではノードの１つが192.168.3.55というIPを持つことがわかりましたので、そのノードに対して先ほどアサインされたNode Portを指定してHTTPアクセスしたいと思います。アクセス確認方法はブラウザでもコマンドでもどちらでもいいですが、以下は*curl*コマンドで実行しています。
 
 ```bash
-➜  manifests git:(dev) ✗ curl 192.168.3.55:31940 
+➜  manifests git:(dev) ✗ curl 192.168.3.55:31940
 <!DOCTYPE html>
 <html>
 <head>
@@ -159,7 +159,7 @@ Commercial support is available at
 </html>
 ```
 
-無事アクセスできることがわかりました。ただTanzu Kubernetesは[kub-vip](https://kube-vip.io/)を採用していたの、*kubectl*でアクセスしにいくkube-apiのVIPで本サービスにもアクセスできるのではと思いました。kube-vipに設定したIPアドレスを忘れたので探します。
+無事アクセスできることがわかりました。ただTanzu Kubernetesは[kub-vip](https://kube-vip.io/)を採用していたので、*kubectl*でアクセスしにいくkube-apiのVIPで本サービスにもアクセスできるのではと思いました。kube-vipに設定したIPアドレスを忘れたので探します。
 
 ```bash
 ➜  manifests git:(dev) ✗ k get all -n kube-system |grep vip                     
@@ -213,7 +213,7 @@ HTTP Status Code 200が返ってきたので、ちゃんとNginxにアクセス�
 サービスを削除します。
 
 ```bash
-➜  manifests git:(dev) ✗ k delete -f service01.yaml 
+➜  manifests git:(dev) ✗ k delete -f service01.yaml
 service "nginx" deleted
 ```
 
@@ -225,7 +225,7 @@ kube-vipを使用してサービスを公開してもいいですが、kube-vip�
 ```
 ➜  manifests git:(dev) ✗ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/namespace.yaml
 namespace/metallb-system created
-➜  manifests git:(dev) ✗ 
+➜  manifests git:(dev) ✗
 ➜  manifests git:(dev) ✗ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/metallb.yaml
 podsecuritypolicy.policy/controller created
 podsecuritypolicy.policy/speaker created
@@ -304,7 +304,7 @@ spec:
 ```
 
 ```bash
-➜  manifests git:(dev) ✗ k apply -f service02.yaml 
+➜  manifests git:(dev) ✗ k apply -f service02.yaml
 service/nginx created
 ➜  manifests git:(dev) ✗  k -n test01 get all     
 NAME                         READY   STATUS    RESTARTS   AGE
@@ -356,7 +356,7 @@ Commercial support is available at
 確認できたらServiceを削除します。
 
 ```bash
-➜  manifests git:(dev) ✗ k delete -f service02.yaml 
+➜  manifests git:(dev) ✗ k delete -f service02.yaml
 service "nginx" deleted
 ```
 
@@ -397,7 +397,7 @@ persistentvolumeclaim/test created
 ➜  manifests git:(dev) ✗ k get pvc            
 NAME   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 test   Bound    pvc-c12efc30-9f2e-4967-9412-327d25ff6ab8   1Gi        RWO            default        5s
-➜  manifests git:(dev) ✗ k get pv 
+➜  manifests git:(dev) ✗ k get pv
 NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM         STORAGECLASS   REASON   AGE
 pvc-c12efc30-9f2e-4967-9412-327d25ff6ab8   1Gi        RWO            Delete           Bound    test01/test   default                 28s
 ```
@@ -419,7 +419,7 @@ persistentvolumeclaim "test" deleted
 Ingress ControllerはいわばL7ロードバランサーとなります。今回はNginx Ingress Controllerをインストールしてみます。
 
 ### Helmの導入
-Helmを使って今回はNginx Ingress Controllerをインストールしてみます。Helmインストール方法は(こちら)[https://helm.sh/docs/intro/install/]を参照してください。
+Helmを使って今回はNginx Ingress Controllerをインストールしてみます。Helmインストール方法は[こちら](https://helm.sh/docs/intro/install/)を参照してください。
 
 ### Nginx Ingress Controllerのインストール
 まずHelmにNginx Ingress Controllerのレポジトリを追加します。その後、最新レポジトリ情報を取得します。
@@ -447,9 +447,9 @@ Hang tight while we grab the latest from your chart repositories...
 Namespaceを作ってNginx Ingress ControllerをHELMからインストールします。
 
 ```bash
-➜  manifests git:(dev) ✗ k create ns nginx-ingress 
+➜  manifests git:(dev) ✗ k create ns nginx-ingress
 namespace/nginx-ingress created
-➜  manifests git:(dev) ✗ helm install ingress-nginx ingress-nginx/ingress-nginx -n nginx-ingress -f helm-nginx-ingress.yaml 
+➜  manifests git:(dev) ✗ helm install ingress-nginx ingress-nginx/ingress-nginx -n nginx-ingress -f helm-nginx-ingress.yaml
 NAME: ingress-nginx
 LAST DEPLOYED: Tue Aug 31 07:03:15 2021
 NAMESPACE: test01
@@ -539,7 +539,7 @@ NAME    CLASS    HOSTS                ADDRESS   PORTS   AGE
 nginx   <none>   test-web.hybrid.jp             80      82s
 ```
 
-設定したFQDNにhttpアクセスします。
+設定したFQDNにHTTPアクセスします。
 
 ```bash
 > curl http://test-web.hybrid.jp
@@ -573,7 +573,7 @@ Commercial support is available at
 Ingressを通してWeb Serverにアクセスできました。確認が完了したらIngressとServiceを削除します。
 
 ```bash
-➜  manifests git:(dev) ✗ k delete -f service03.yaml 
+➜  manifests git:(dev) ✗ k delete -f service03.yaml
 service "nginx" deleted
 ➜  manifests git:(dev) ✗ k delete -f ingress01.yaml
 ingress.networking.k8s.io "nginx" deleted
@@ -588,7 +588,7 @@ Tanzu KubernetesにMetal LBやNginx Ingress Controllerを導入してサービ�
 Nginx DeploymentとNamespaceを削除しときます。他の章でMetalLBとNginx Ingress Controllerを使う予定なので残しておきます。
 
 ```bash
-➜  manifests git:(dev) ✗ k delete -f deployment01.yaml 
+➜  manifests git:(dev) ✗ k delete -f deployment01.yaml
 deployment.apps "nginx" deleted
 ➜  manifests git:(dev) ✗ k delete ns test01           
 namespace "test01" deleted

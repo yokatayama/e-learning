@@ -135,7 +135,7 @@ Not logged in
 <何も出力されない>
 ```
 
-プロンプトが返ってきましたら、以下のコマンドでプラグインがインストールされたかを確認します。
+プロンプトが返ってきたら、以下のコマンドでプラグインがインストールされたかを確認します。
 
 ```bash
 > tanzu plugin list
@@ -149,14 +149,14 @@ Not logged in
 ```
 
 #### Kubectlコマンドのインストール
-Kubernetesを管理するためのコマンド*kubectl*をbootstrap machineにインストールします。先ほどTanzu CLIセクションでダウンロードしたと思いますが、忘れてしまった方は[こちら](https://customerconnect.vmware.com/en/downloads/info/slug/infrastructure_operations_management/vmware_tanzu_kubernetes_grid/1_x)からダウンロードしてください。gzip形式で固められているので解凍用ソフトをダウンロードしてください。本検証環境では[こちら](http://gnuwin32.sourceforge.net/packages/gzip.htm)を使用しました。
+Kubernetesを管理するためのコマンド*kubectl*をbootstrap machineにインストールします。先ほどTanzu CLIセクションでダウンロードしたと思いますが、忘れてしまった方は[こちら](https://customerconnect.vmware.com/en/downloads/info/slug/infrastructure_operations_management/vmware_tanzu_kubernetes_grid/1_x)からダウンロードしてください。gzip形式で固められているので解凍用ソフトをダウンロードしてください。本検証環境では[Gzip for Windows](http://gnuwin32.sourceforge.net/packages/gzip.htm)を使用しました。
 
 ```bash
 > gzip -d C:\Users\Administrator\Desktop\work\kubectl-windows-v1.20.5-vmware.1.exe.gz
 ```
 
-解凍が完了したら、先ほどとTanzu CLI同様に任意の場所にコピーして、リネームしてパーミッションを与えてパスを通します。本検証環境では*C:\Program Files\kubectl*フォルダーを作成して、*kubectl.exe*という名前でコピーしています。  
-パスを通し終わりましたらコマンドが実行できるかcmdを開いて確認します。
+解凍が完了したら、先ほどのTanzu CLI同様に任意の場所にコピー後、リネームしてパーミッションを与えてPathを通します。本検証環境では*C:\Program Files\kubectl*フォルダーを作成して、*kubectl.exe*という名前でコピーしています。  
+Pathを通した後コマンドが実行できるかcmdを開いて確認します。
 
 ```bash
 > kubectl version
@@ -185,7 +185,7 @@ cmdを開いて、yttコマンドが実行できるか確認します。
 ytt version 0.31.0
 ```
 
-*kapp*も同じように解凍して、*C:\Program Files\carvel*に*kapp.exe*という名前でコピーしたのち、コマンドが打てるか確認します。
+*kapp*も同じように解凍して、*C:\Program Files\carvel*に*kapp.exe*という名前でコピー後、コマンドが打てるか確認します。
 
 ```bash
 > gzip -d kapp-windows-amd64-v0.36.0+vmware.1.gz
@@ -198,7 +198,7 @@ kapp version 0.36.0
 Succeeded
 ```
 
-*kbld*も*imgpkg*同じようにやってきます。
+*kbld*も*imgpkg*同じように実施します。
 
 ```bash
 > gzip -d kbld-windows-amd64-v0.28.0+vmware.1.gz
@@ -227,12 +227,12 @@ Management Clusterをデプロイします。CLIとUIどちらかでインスト
 - bootstrap machineにDocker環境と*tanzu* CLI、*kubectl*をインストールしていること
 -  vSphereバージョン要件
   -  [x] vSphere 7
-  -  [] vSphere 6.7u3 (Enterprise Plus license)
-  -  [] VMware Cloud on AWS
-  -  [] Azure VMware Solution
+  -  [x] vSphere 6.7u3 (Enterprise Plus license)
+  -  [x] VMware Cloud on AWS
+  -  [x] Azure VMware Solution
 -  vSphere構成要件
   -  [x] vSphereホストが２台以上 (4台あります！)
-  -  [] TKG VM群を格納するVMフォルダー (後ほど実施)
+  -  [x] TKG VM群を格納するVMフォルダー (後ほど実施)
   -  [x] いい感じに容量があるデータストア (結構容量あるからたぶん大丈夫)
 - ネットワーク要件
   - [x] VMと接続可能なDHCPサーバー
@@ -242,7 +242,7 @@ Management Clusterをデプロイします。CLIとUIどちらかでインスト
   - [x] Management ClusterとTanzu Kubernetes ClusterからvCenterへアクセスできること
   - [x] Bootstrap MachineとManagement ClusterとTanzu Kubernetes Clusterの各種VMのport 6443(kube-api)にアクセスできること
   - [x] Management ClusterとTanzu Kubernetes Clusterの各種VMがvCenterのPort 443(API)にアクセスできること
-  - [] Bottstrap machineがBOMファイル(~/.tanzu/tkg/bom/にあるらしい)に記載されたコンテナイメージを取得できる環境であること(たぶんインターネットにでれるから大丈夫と信じる)
+  - [x] Bottstrap machineがBOMファイル(~/.tanzu/tkg/bom/にあるらしい)に記載されたコンテナイメージを取得できる環境であること(たぶんインターネットにでれるから大丈夫と信じる)
   - [x] vSphereホスト全てNTPサーバーを介して時刻同期されていること、タイムゾーンも一致していること
 
 と色々書いてありましたが、インストールして失敗してみないと理解できないような要件もあったのでとりあえずやってみます。
@@ -261,7 +261,7 @@ Management Clusterをデプロイするときに必要となるvCenterロール�
 最後にそれぞれのvCenterオブジェクトに対して、*tkg-user*ユーザーと*TKG*ロールをアサインしていきます。各vCenterのセクションごとに権限追加する対象オブジェクトを以下に記載してますので、それに従ってください。 基本操作はオブジェクトを選択後、右クリックして*権限の追加*を選択して追加するだけです。
 
 - *ホストおよびクラスタ*セクション
-  - ツリーのトップにあるvCeneter
+  - ツリーのトップにあるvCenter
   - TKGをデプロイするつもりのデータセンター
   - TKGをデプロイするつもりのクラスター
   - TKGをデプロイするつもりのクラスターに所属する全てのvSphereホスト
@@ -282,7 +282,7 @@ bootstrap machine上でssh keyを作成します。SSH public keyはManagement C
 > ssh-keygen -t rsa -b 4096 -C "tanzu@hpe.com"
 ```
 
-次にManagement Clusterをデプロイする際に、vCenterの証明書のフィンガープリントが必要なようなので取得します。vCenter**管理サービス(デフォルトポート5480)**にアクセスして、アクセス> SSHログインを有効にしてください。
+次にManagement Clusterをデプロイする際に、vCenterの証明書のフィンガープリントが必要なので取得します。vCenter**管理サービス(デフォルトポート5480)**にアクセスして、アクセス> SSHログインを有効にしてください。
 
 bootstrap machineからvCenterにrootユーザーでSSHアクセスします。本検証環境では*192.168.3.30*がvCenterになります。
 ```bash
@@ -298,7 +298,7 @@ Type: vCenter Server with an embedded Platform Services Controller
 Command>
 ```
 
-**shell**と入力し、SSL証明書のフィンガープリント見ます。このフィンガープリントはコピペしてメモ帳に貼り付けて保存しといてください。
+**shell**と入力し、SSL証明書のフィンガープリント見ます。このフィンガープリントはコピペして保存しておいてください。
 
 ```bash
 Command> shell
@@ -306,10 +306,10 @@ Shell access is granted to root
 root@vcsa [ ~ ]# openssl x509 -in /etc/vmware-vpx/ssl/rui.crt -fingerprint -sha1 -noout
 SHA1 Fingerprint=51:C2:C3:95:3A:5C:32:4D:75:64:DD:4C:2D:4F:EE:51:FF:EF:BD:93
 ```
-フィンガープリントの保存終わりましたら、*exit*でSSHセッションを終わらせてください。
+フィンガープリントの保存が終わりましたら、*exit*でSSHセッションを終わらせてください。
 
 #### ベースイメージテンプレートのインポート
-TKGの各種クラスターを構成するためのベースイメージテンプレート(OVA)を最初に取得する必要があるようです。このベースイメージにはいい感じのOSとk8sがインストールされているようです。
+TKGの各種クラスターを構成するためのベースイメージテンプレート(OVA)を最初に取得する必要があります。このベースイメージにはいい感じのOSとk8sがインストールされているようです。
 
 今回ターゲットとするのTKG1.3で必要なベースイメージテンプレートは以下です。クラスターの種別によって異なるようです。
 
@@ -320,7 +320,7 @@ TKGの各種クラスターを構成するためのベースイメージテン�
 - Workload Cluster
   - VMwareサイトでダウンロードできるお好きなOSバージョンとK8sバージョンのOVAテンプレート
 
-ここでWorkload Clusterというものが出てきましたが、たぶんPodを稼働させるクラスターを指しているのだと思います。Management ClusterはUbuntu OSベースとPhoton OSベースで選べるようなので、本検証環境ではもちろんUbuntuベースを選択します。ダウンロードはCLIの時と同じく、[ここから](https://customerconnect.vmware.com/en/downloads/info/slug/infrastructure_operations_management/vmware_tanzu_kubernetes_grid/1_x)できます。
+ここでWorkload Clusterというものが出てきましたが、おそらくPodを稼働させるクラスターを指しているのだと思います。Management ClusterはUbuntu OSベースとPhoton OSベースで選べるようなので、本検証環境ではもちろんUbuntuベースを選択します。ダウンロードはCLIの時と同じく、[ここから](https://customerconnect.vmware.com/en/downloads/info/slug/infrastructure_operations_management/vmware_tanzu_kubernetes_grid/1_x)できます。
 
 
 それではダウンロードしたOVAをデプロイしていきます。ちなみに本検証環境では以下のようにDatacenterとClusterが定義されています。
@@ -331,7 +331,7 @@ TKGの各種クラスターを構成するためのベースイメージテン�
 
 ![](pics/vCenterDeployOVA01.png)
 
-デプロイが終了したことを確認してください。ここでの注意は**何が起こってもVMの電源をつけないこと**です。いまからこのVMをテンプレートにします。たぶん、VMの電源をつけるとinitプロセスが色々書き換えて、後々このテンプレートを使う際に不具合があるのだと予想します。  
+デプロイが終了したことを確認してください。ここでの注意は**何が起こってもVMの電源をつけないこと**です。いまからこのVMをテンプレートにします。おそらく、VMの電源をつけるとinitプロセスが色々書き換えて、後々このテンプレートを使う際に不具合があるのだと予想します。  
 
 それでは先ほどOVAからデプロイしたVMをVMテンプレートにします。
 ![](pics/vCenterConvertToTemplate.png)
@@ -431,22 +431,22 @@ PASSWORDを入力しましたら、CONNECTボタンを押してチェックし�
 
 DATACENTERはTKGをインストールするデータセンターを選び、SSH PUBLIC KEYはbootstrap machineの*~/.ssh/id_rsa.pub*をコピペしてNEXTを押しました。
 
-次にManagement Clusterの設定画面となります。INSTANCE TYPEで*small*を選ぶとk8s関連のさまざまなソフトウェアをデフォルトでインストールしてくれないようなので、Productionk環境で*medium*を選択してみました。詳しくは[こちら](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.3/vmware-tanzu-kubernetes-grid-13/GUID-mgmt-clusters-vsphere.html)を参照してください。
+次にManagement Clusterの設定画面となります。INSTANCE TYPEで*small*を選ぶとk8s関連のさまざまなソフトウェアをデフォルトでインストールしてくれないようなので、Production環境で*medium*を選択してみました。詳しくは[こちら](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.3/vmware-tanzu-kubernetes-grid-13/GUID-mgmt-clusters-vsphere.html)を参照してください。
 
-MANAGEMENT CLUSTER NAMEは空欄にし、CONTROL PLANE ENDPOINTはDHCP IPプール**外**のIPを指定します。MACHINE HEALTH CHECKはEnableにしてNEXTを押しました。
+MANAGEMENT CLUSTER NAMEは空欄にし、CONTROL PLANE ENDPOINTはDHCP IPプール**外**のIPを指定します。MACHINE HEALTH CHECKはEnableにしてNEXTを押します。
 
 ![](pics/TanzuInstallerUI05.png)
 
-次にNSX Advanced Load Balancerについての設定画面となりました。今回NSX-Tは使っていないので何も入力しませんでした。
+次にNSX Advanced Load Balancerについての設定画面となりました。今回NSX-Tは使っていないので何も入力しません。
 
 ![](pics/TanzuInstallerUI06.png)
 
-次にManagement Clusterのメタデータ設定画面になりました。オプション扱いのようなので何も入力せずにNEXTボタンを押しました。
+次にManagement Clusterのメタデータ設定画面になりました。オプション扱いのようなので何も入力せずにNEXTボタンを押します。
 
 ![](pics/TanzuInstallerUI07.png)
 
 
-次にResource設定画面になりました。VM FOLDERはプルダウンから*/Datacenter01/vm/tkg*を選択し、DATASTOREは適当なデータストアを選択しました。CLUSTERは表示されているクラスタ名にチェックしました。
+次にResource設定画面になりました。VM FOLDERはプルダウンから*/Datacenter01/vm/tkg*を選択し、DATASTOREは適当なデータストアを選択しました。CLUSTERは表示されているクラスタ名にチェックします。
 
 ![](pics/TanzuInstallerUI08.png)
 
@@ -454,11 +454,11 @@ MANAGEMENT CLUSTER NAMEは空欄にし、CONTROL PLANE ENDPOINTはDHCP IPプー�
 
 ![](pics/TanzuInstallerUI09.png)
 
-次に認証管理の設定画面になりました。とくにOIDCやLDAPなどは使う予定ないので、オフとしました。
+次に認証管理の設定画面になりました。とくにOIDCやLDAPなどは使う予定ないので、オフとします。
 
 ![](pics/TanzuInstallerUI10.png)
 
-次にベースイメージ選択画面になりました。プルダウンから作成したVMテンプレートを選択しました。
+次にベースイメージ選択画面になりました。プルダウンから作成したVMテンプレートを選択します。
 
 ![](pics/TanzuInstallerUI11.png)
 
@@ -478,7 +478,7 @@ MANAGEMENT CLUSTER NAMEは空欄にし、CONTROL PLANE ENDPOINTはDHCP IPプー�
 
 ![](pics/TanzuInstallerUI15.png)
 
-決意を決めたら、DEPLOY MANAGEMENT CLUSTERボタンを押しますが、その前に[KIND環境でハマったこと](#KindKubeProxyError)を参照してください。
+決意を固めたら、DEPLOY MANAGEMENT CLUSTERボタンを押しますが、その前に[KIND環境でハマったこと](#KindKubeProxyError)を参照してください。
 
 ![](pics/TanzuInstallerUI16.png)
 
@@ -494,7 +494,7 @@ CONTAINER ID   IMAGE                                                         COM
 2900cdcbb0a9   projects.registry.vmware.com/tkg/kind/node:v1.20.5_vmware.1   "/usr/local/bin/entr…"   39 seconds ago   Up 28 seconds   127.0.0.1:56730->6443/tcp   tkg-kind-c4k8n2gn8cr0bi1qtvg0-control-plane
 ```
 
-コーヒーを飲みながら20-30分待つとインストールが完了しました。*CLI Command Equivalent*で表示されているコマンドラインを**コピーしといてください**。
+コーヒーを飲みながら20-30分待つとインストールが完了しました。*CLI Command Equivalent*で表示されているコマンドラインを**コピーしておいてください**。
 
 ![](pics/TanzuInstallerUI17.png)
 
@@ -551,7 +551,7 @@ You can now create your first workload cluster by running the following:
   tanzu cluster create [name] -f [file]
 ```
 
-今回*Production*を選択したので、management cluster nodeが3台と+1台謎のVMが作成されました。DatastoreはvShpereホストのローカルディスクを使っていますので、冗長性という観点ではあまり意味ないですが・・・
+今回*Production*を選択したので、management cluster nodeが3台と+1台謎のVMが作成されました。DatastoreはESXiホストのローカルディスクを使っていますので、冗長性という観点ではあまり意味ないですが・・・
 
 ![](pics/TanzuInstallerUI18.png)
 
@@ -596,7 +596,7 @@ Tanzu印のKubernetesをデプロイするための設定ファイルを作成�
 
 Management Clusterのインストール完了後、*CLI Command Equivalent*でコピーしたコマンドラインに記載されているyamlファイル名を*~/.tanzu/tkg/clusterconfigs/*から探し出して適当な場所にコピーしてください。ファイル名は適当でいいですが、本検証環境では*myk8s.yaml*としました。
 
-以下のパラメータを追加、または変更します。YAML形式なのでスペースやインデント等に注意してください。値は自身の環境に合った値に適時読み替えてください。
+以下のパラメータを追加、または変更します。YAML形式なのでスペースやインデント等に注意してください。値は自身の環境に合った値に適宜読み替えてください。
 
 - CLUSTER_NAM: 作成するk8sクラスタ名
 - VSPHERE_CONTROL_PLANE_ENDPOINT: 作成するk8sクラスタAPIサーバーVIP (静的IP)
