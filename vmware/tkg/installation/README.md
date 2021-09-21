@@ -227,12 +227,12 @@ Management Clusterをデプロイします。CLIとUIどちらかでインスト
 - bootstrap machineにDocker環境と*tanzu* CLI、*kubectl*をインストールしていること
 -  vSphereバージョン要件
   -  [x] vSphere 7
-  -  [x] vSphere 6.7u3 (Enterprise Plus license)
-  -  [x] VMware Cloud on AWS
-  -  [x] Azure VMware Solution
+  -  [ ] vSphere 6.7u3 (Enterprise Plus license)
+  -  [ ] VMware Cloud on AWS
+  -  [ 	] Azure VMware Solution
 -  vSphere構成要件
   -  [x] vSphereホストが２台以上 (4台あります！)
-  -  [x] TKG VM群を格納するVMフォルダー (後ほど実施)
+  -  [ ] TKG VM群を格納するVMフォルダー (後ほど実施)
   -  [x] いい感じに容量があるデータストア (結構容量あるからたぶん大丈夫)
 - ネットワーク要件
   - [x] VMと接続可能なDHCPサーバー
@@ -240,7 +240,7 @@ Management Clusterをデプロイします。CLIとUIどちらかでインスト
   - [x] Management ClusterとTanzu Kubernetes Cluster用の静的IP (DHCPサーバーからIP振られるのか現段階では理解していない)
   - [x] DHCPサーバーのレンジには含んでないが、DHCPサーバーで提供されるアドレスと同じサブネットにいるKube-VIPの静的IP
   - [x] Management ClusterとTanzu Kubernetes ClusterからvCenterへアクセスできること
-  - [x] Bootstrap MachineとManagement ClusterとTanzu Kubernetes Clusterの各種VMのport 6443(kube-api)にアクセスできること
+  - [ ] Bootstrap MachineとManagement ClusterとTanzu Kubernetes Clusterの各種VMのport 6443(kube-api)にアクセスできること
   - [x] Management ClusterとTanzu Kubernetes Clusterの各種VMがvCenterのPort 443(API)にアクセスできること
   - [x] Bottstrap machineがBOMファイル(~/.tanzu/tkg/bom/にあるらしい)に記載されたコンテナイメージを取得できる環境であること(たぶんインターネットにでれるから大丈夫と信じる)
   - [x] vSphereホスト全てNTPサーバーを介して時刻同期されていること、タイムゾーンも一致していること
