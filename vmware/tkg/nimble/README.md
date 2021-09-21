@@ -15,10 +15,10 @@
 
 ## 事前準備
 
-- 適切なkubeconfigを手に入れおり、*kubectl*コマンドでそのk8sクラスターにcluster admin権限でアクセスできること
+- 適切なkubeconfigを手に入れており、*kubectl*コマンドでそのk8sクラスターにcluster admin権限でアクセスできること
 - YAMLについての構造を理解していること(復習したい方は本レポジトリのAnsible入門編を参照してください)
 - K8sリソースに関して大まかに理解していること
-- HPE 3PAR、Nimble、Alletra等のストレージがあること
+- HPE 3PAR、Primera、Nimble、Alletra等のストレージがあること
 
 ## HPE Nimble Storageをコンテナボリュームとして活用
 VMware Tanzu Kubernetes Grid(TKG)はデフォルトでvSphereのデータストア上にコンテナボリュームを作成できるようになっていますが、直接ストレージからボリュームを渡したいサービスもあると思います。今回はHPE Nimble Storageを使ってコンテナボリュームを作成する方法を検証していきます。
@@ -33,7 +33,7 @@ HELMで簡単にインストールしていきます。HPE CSI DriverのArtifact
 はじめにNamespaceを作成します。Namespace名は*hpe-storage*にします。
 
 ```bash
-➜  ~  k create ns hpe-storage 
+➜  ~  k create ns hpe-storage
 namespace/hpe-storage created
 ```
 
@@ -70,10 +70,10 @@ HPE CSIドライバーをHelmからインストール時に設定可能なパラ
 今回の検証環境ではiSCSIを使います。CHAP認証を設定する方は、*helm-hpe-csi-driver.yaml*の*iscsi*項目を設定してください。サンプルは[こちら](manifests/helm-hpe-csi-driver.yaml)にあります。
 
 ### HPE CSI Driverと仲間たちをインストール
-それではHELMからCSIドライバーをインストールしてみます。HPE CSIドライバー様々なコンポーネントで成り立っているので、それらも同時にインストールされます。
+それではHELMからCSIドライバーをインストールしてみます。HPE CSIドライバーは様々なコンポーネントで成り立っているので、それらも同時にインストールされます。
 
 ```bash
-➜  manifests git:(dev) ✗ helm install hpe-csi hpe-storage/hpe-csi-driver -n hpe-storage -f helm-hpe-csi-driver.yaml 
+➜  manifests git:(dev) ✗ helm install hpe-csi hpe-storage/hpe-csi-driver -n hpe-storage -f helm-hpe-csi-driver.yaml
 W0908 15:45:54.168274   17286 warnings.go:67] apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
 W0908 15:45:54.242353   17286 warnings.go:67] apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
 W0908 15:45:54.285738   17286 warnings.go:67] apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
@@ -128,7 +128,7 @@ replicaset.apps/nimble-csp-5f6cc8c744           1         1         1       5m28
 replicaset.apps/primera3par-csp-7f78f498d5      1         1         1       5m28s
 ```
 
-複数のオブジェクトが作成されていることがわかると思います。HPE CSIドライバーを使うにはこれら全てのオブジェクトが必要となり、逆にいうとこれさえインストールしてしまえば、HPE 3PAR、Alletra、Nimble、Primeraストレージを使用する準備が整いました。
+複数のオブジェクトが作成されていることがわかると思います。HPE CSIドライバーを使うにはこれら全てのオブジェクトが必要となり、逆にいうとこれさえインストールしてしまえば、HPE 3PAR、Primera、Nimble、AlletraストレージをK8s環境で使用する準備が整いました。
 
 詳しい仕組みについて知りたい方は以下をご参照ください。
 
@@ -166,11 +166,6 @@ service/nimble-csp-svc        ClusterIP   100.64.137.191   <none>        8080/TC
 
 HELMでCSIドライバーをインストールした際に作成された各Storage製品用のServiceで公開されているPortを指定します。*nimble-csp-svc*は8080を公開しているので*8080*と指定しています。
 
-```log
-NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-service/nimble-csp-svc        ClusterIP   100.64.137.191   <none>        8080/TCP   5m28s
-```
-
 - backend
 
 Storage管理コンソール(もしくはAPI)のIP Addressを指定します。
@@ -184,19 +179,19 @@ Storageにログインするためのユーザー名を指定します。ユー�
 Storageにログインするためのユーザーのパスワードを指定します。
 
 
-作成できましたらデプロイします。
+作成できたらデプロイします。
 
 ```bash
 ➜  manifests git:(dev) ✗ k apply -f secret.yaml      
 secret/hpe-nimble created
-➜  manifests git:(dev) ✗ 
+➜  manifests git:(dev) ✗
 ➜  manifests git:(dev) ✗ k get secret -n hpe-storage hpe-nimble
 NAME         TYPE     DATA   AGE
 hpe-nimble   Opaque   5      22s
 ```
 
 ### ストレージの登録
-StorageClassオブジェクトを作成します。先ほど作成したストレージ情報を実際に使えるストレージとしてk8sに登録するイメージです。*storageclass01.yaml*というファイル名でマニフェストを作成してデプロイしてみます。サンプルは[こちら](manifests/storageclass01.yaml)にあります。
+StorageClassオブジェクトを作成します。先ほど作成したストレージ情報を実際に使用可能なストレージとしてk8sに登録するイメージです。*storageclass01.yaml*というファイル名でマニフェストを作成してデプロイしてみます。サンプルは[こちら](manifests/storageclass01.yaml)にあります。
 
 
 ```yaml:storageclass01.yaml
@@ -223,12 +218,12 @@ reclaimPolicy: Delete
 allowVolumeExpansion: true
 ```
 
-作成できましたらデプロイします。
+作成できたらデプロイします。
 
 ```bash
-➜  manifests git:(dev) ✗ k apply -f storageclass01.yaml 
+➜  manifests git:(dev) ✗ k apply -f storageclass01.yaml
 storageclass.storage.k8s.io/hpe-nimble-block created
-➜  manifests git:(dev) ✗ 
+➜  manifests git:(dev) ✗
 ➜  manifests git:(dev) ✗ k get sc                 
 NAME                PROVISIONER              RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
 default (default)   csi.vsphere.vmware.com   Delete          Immediate           true                   9d
@@ -240,7 +235,7 @@ hpe-nimble-block    csi.hpe.com              Delete          Immediate          
 つまり、今までのようにいちいちストレージ管理コンソールにログインしてボリュームを切り出すような作業はもう必要ありません。
 
 ### PersistentVolumeClaimしてみる
-では本当にk8sを通して本当にStorage側でボリュームを作成・削除できるのかをテストしてみます。PVCを作成してみます。*pvc01.yaml*というファイル名でマニフェストを作成してデプロイしてみます。サンプルは[こちら](manifests/pvc01s.yaml)にあります。
+では本当にk8sを通してStorage側でボリュームを作成・削除できるのかをテストしてみます。PVCを作成してみます。*pvc01.yaml*というファイル名でマニフェストを作成してデプロイしてみます。サンプルは[こちら](manifests/pvc01s.yaml)にあります。
 
 ```yaml:pvc01.yaml
 ---
@@ -259,12 +254,12 @@ spec:
 ```
 
 
-作成できましたらデプロイします。
+作成できたらデプロイします。
 
 ```bash
-➜  manifests git:(dev) ✗ k apply -f pvc01.yaml 
+➜  manifests git:(dev) ✗ k apply -f pvc01.yaml
 persistentvolumeclaim/pvc01 created
-➜  manifests git:(dev) ✗ 
+➜  manifests git:(dev) ✗
 ➜  manifests git:(dev) ✗ k get pvc            
 NAME    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS       AGE
 pvc01   Bound    pvc-d8609bc4-2936-4c61-a3de-2884dda55dea   10Gi       RWO            hpe-nimble-block   5s        true                   43s
@@ -277,7 +272,7 @@ PVCの状態がBoundとなっていることがわかります。つまり、利
 PersistentVolume情報を確認します。
 
 ```bash
-➜  manifests git:(dev) ✗ k get pv 
+➜  manifests git:(dev) ✗ k get pv
 NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM               STORAGECLASS       REASON   AGE
 pvc-d8609bc4-2936-4c61-a3de-2884dda55dea   10Gi       RWO            Delete           Bound    hpe-storage/pvc01   hpe-nimble-block            2m45s
 ```
@@ -290,12 +285,12 @@ pvc-d8609bc4-2936-4c61-a3de-2884dda55dea   10Gi       RWO            Delete     
 PVCを削除してください。Nimble上ではボリュームは削除されずにオフラインとなりますので、万が一オペミスで間違って消した場合もボリュームの実体は残ります。
 
 ```bash
-➜  manifests git:(dev) ✗ k delete -f pvc01.yaml 
+➜  manifests git:(dev) ✗ k delete -f pvc01.yaml
 persistentvolumeclaim "pvc01" deleted
-➜  manifests git:(dev) ✗ 
+➜  manifests git:(dev) ✗
 ➜  manifests git:(dev) ✗ k get pvc             
 No resources found in hpe-storage namespace.
-➜  manifests git:(dev) ✗ 
-➜  manifests git:(dev) ✗ k get pv 
+➜  manifests git:(dev) ✗
+➜  manifests git:(dev) ✗ k get pv
 No resources found
 ```
