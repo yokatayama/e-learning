@@ -16,9 +16,9 @@ GPU Operatorは使うと便利ですが、使いこなすまでのハードル�
 - GPUの有無でどれだけ性能差が出るか体験してみる (学習モデルやパラメータによっても性能結果は大いに変わってくるので、あくまで実装方法の参考まで)
 
 ## TL;DR
-- 事前準備がなかなか多い(GPU Operatorを使うまでの道のりが結構長い。手順はこちら)
+- 事前準備がなかなか多い(GPU Operatorを使うまでの道のりが結構長い。)
 - GPUの知識（CUDA系）を理解してなくてもOperator君がうまいこと実施してくれるので◎
-- トラブったときにはRed Hat OpenShiftの知識はもちろんのこと、Dockerやk8s系の知識も必要になる
+- トラブったときにはRed Hat OpenShiftの知識はもちろんのこと、コンテナやk8s系の知識も必要になる
 
 ## 検証環境概要
 - ProLiant DL380 Gen9 x3
@@ -486,7 +486,7 @@ NFD Operatorと同様にOpenShift WebUI上からインストールしてみま�
 Cluster Policyのマニフェストを変更すれば各リソースのバージョンを任意のバージョンに変更することも可能みたいですが、環境固有の部分以外はデフォルトのまま進めます。
 ![](pics/ocpwebui_gpuoperator_clusterpolicy02.png)
 
-Cluster Policy CRまで作成すると関連するpodが起動してきます。
+Cluster Policy Custom Resourceまで作成すると関連するpodが起動してきます。
 GPU OperatorでデプロイされるGPUコンテナ達は以下のラインナップです。
 ```bash
 > oc get pod --all-namespaces | grep -e nvidia -e gpu
@@ -557,9 +557,9 @@ GUIで確認するとこんな感じです。
   - Proxy環境下の場合、どのEnv設定に変更が必要かはコンテナの作りに依存する部分でもあるのでいろいろ試す必要が出てきそう
   - OperatorやDeamonSetのManifestにENVでProxy設定を追加
 - GPU搭載ホストにGPUドライバはいれない！
-　- ホストの方でGPUをつかんでしまうので、GPUをコンテナに見せるときはNG
+ - ホストの方でGPUをつかんでしまうので、GPUをコンテナに見せるときはNG
 
-#### セキュアブートオフの参考
+### セキュアブートオフの参考
 ![](pics/vcenter_vm_setting_secureboot.png)
 
 #### env設定の参考
