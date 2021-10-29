@@ -13,13 +13,13 @@ Red Hat OpenShift Container Platform上にGPU Operatorを実装し、NVIDIA T4 G
 今回お試しするTensorflow benchmarksは一部既にメンテナンス終了しているスクリプトもあるので、利用する際はご確認ください。
 
 ### 目標
-- Red Hat OpenShift上でAIの実行基盤を作ってみる
+- Red Hat OpenShift上でAI/DeepLearningの実行基盤を作ってみる
 - GPUの有無でどれだけ性能差が出るか体験してみる (学習モデルやパラメータによっても性能結果は大いに変わってくるので、あくまで実装方法の参考まで)
 
 ## TL;DR
 - 事前準備がなかなか多い(GPU Operatorを使うまでの道のりが結構長い。[手順はこちら](../GPU_Operator))
 - GPUの知識（CUDA系）を理解してなくてもOperator君がうまいこと実施してくれるので◎
-- トラブったときにはRed Hat OpenShiftの知識はもちろんのこと、Dockerやk8s系の知識も必要になる
+- DeepLearningの知識、パラメータ等をある程度抑えておく必要がある
 
 ## 検証環境概要
 - ProLiant DL380 Gen9 x3
