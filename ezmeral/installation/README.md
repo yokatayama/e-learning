@@ -34,7 +34,8 @@
 CentOS Linux release 7.9.2009 (Core)
 ```
 
-ネットワーク設定等の基本的な設定を行います。**k8sノードを含む全てのノード**を同じ構成にしといて大丈夫です。ただし、k8sノードに関しては**swap**を無効にしてください。IPアドレスはもちろん各ノードで違うものにしてください:)  
+
+ネットワーク設定等の基本的な設定と[こちらの設定](https://docs.containerplatform.hpe.com/53/reference/system-requirements/general/Configuration_Requirements.html)を行います。**k8sノードを含む全てのノード**を同じ構成にしといて大丈夫です。ただし、k8sノードに関しては**swap**を無効にしてください。IPアドレスはもちろん各ノードで違うものにしてください:)  
 
 ### Proxy設定(Proxy環境下で構築する場合のみ)
 今回の検証環境はWeb Proxyを介してインターネットに接続させます。プロキシ設定は[こちら](https://docs.containerplatform.hpe.com/53/reference/system-requirements/general/Web_Proxy_Requirements.html)に簡単に記載されています。
