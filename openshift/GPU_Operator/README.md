@@ -559,7 +559,7 @@ GUIで確認するとこんな感じです。
 - GPU搭載ホストにGPUドライバはいれない！
  - ホストの方でGPUをつかんでしまうので、GPUをコンテナに見せるときはNG
 
-### セキュアブートオフの参考
+セキュアブートオフの参考
 ![](pics/vcenter_vm_setting_secureboot.png)
 
 #### env設定の参考
@@ -567,7 +567,7 @@ proxy環境下でのOpenShift構成では構築の際に使用するInstall-conf
 ![](pics/ocpwebui_nvidia_driver_daemonset.png)
 
 
-### GPUを使用しないPodのSchedule設定
+#### GPUを使用しないPodのSchedule設定
 GPUを使う指定をしないPodはGPUノード（Worker03）にはScheduleされないよう設定します。
 ```bash
 > oc adm taint node worker03 nodetype=gpu:NoSchedule
