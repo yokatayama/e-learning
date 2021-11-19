@@ -3,11 +3,11 @@ TKGをインストールした際の手順等になります。検証環境や�
 
 ## 改訂履歴
 
-| バージョン | 日付 | 改訂者 |
-| :---: | :---: | :---: |
-| 0.1 | 2021.08.30 | [Taku Kimura @HPE Japan Presales](taku.kimura@hpe.com) |
-|  |  |  |
-|  |  |  |
+| バージョン | 日付 | 改訂者 | 更新内容 |
+| :---: | :---: | :---: | :---: |
+| 0.1 | 2021.08.30 | [Taku Kimura @HPE Japan Presales](taku.kimura@hpe.com) | 初版発行 |
+| 0.1.1 | 2021.11.19 | [Taku Kimura @HPE Japan Presales](taku.kimura@hpe.com) | DHCPサーバーへのIP予約を追加 |
+|  |  |  |  |
 
 ## はじめに
 初版筆者はオープンソースしか普段触っておらず、VCP6は持っていましたが、VMwareの*V*の字くらいしか覚えていません。さらにはLinuxにしか触らないのでWindowsもさほどわかりません。ただK8sに関しては無免許ですが、おおまかに構造を理解しています。そのため、各種手順説明ではVMware特有の言葉がわからないで無視していることが多々ありますが、皆様にコンテナ環境の素晴らしさを伝えたいがためにTanzu Kubernetes Gridのインストールにチャレンジしていますので、本コンテンツを暖かい目で読んでいただけると幸いです。
@@ -588,6 +588,9 @@ Managment Clusterのワーカーノードみたいな感じでしょうか？
 
 どのような仕組みでManagment Clusterがインストールされるかは簡単に確認しましたので、興味がある方は[こちら](#ArchToInstallMgmtCluster)を参照してください。
 
+#### DHCPサーバーへのIP予約
+DHCPサーバーに対して、各ノードに初回アサインされたIPアドレスを登録します。
+
 ### Tanzu Kuberentesのデプロイ
 待ちに待ったTanzu Kubernetesをデプロイしてみます。
 
@@ -736,6 +739,8 @@ tkg-mgmt-vsphere-20210830120158-md-0-8558d5fbb5-hc6xs   Ready    <none>         
 
 ```
 
+#### DHCPサーバーへのIP予約
+DHCPサーバーに対して、各ノードに初回アサインされたIPアドレスを登録します。
 
 ## ハマったこと集
 <a id="WinOnVmwareDockerDesktopError"></a>
