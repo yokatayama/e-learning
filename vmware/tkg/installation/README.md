@@ -7,6 +7,7 @@ TKGをインストールした際の手順等になります。検証環境や�
 | :---: | :---: | :---: | :---: |
 | 0.1 | 2021.08.30 | [Taku Kimura @HPE Japan Presales](taku.kimura@hpe.com) | 初版発行 |
 | 0.1.1 | 2021.11.19 | [Taku Kimura @HPE Japan Presales](taku.kimura@hpe.com) | DHCPサーバーへのIP予約を追加 |
+| 0.1.2 | 2021.12.21 | [Taku Kimura @HPE Japan Presales](taku.kimura@hpe.com) |  Docker Desktopのライセンスに関する注意を追加|
 |  |  |  |  |
 
 ## はじめに
@@ -58,6 +59,8 @@ Tanzu CLIコマンドを実行できるbootstrap machineを作成します。今
 
 #### Docker Desktop for Windows
 Docker Desktopを使ってkind(k8s in Docker)環境をbootstrap machineで作れるようにしなければならないようなので、[ここ](https://www.docker.com/products/docker-desktop)からDocker Desktopをダウンロードして、インストーラーに従いインストールします。vSphere環境で仮想マシンとしてWindows Serverを実行している方は事前に[仮想マシンWindows Server上でのDocker Desktop実行時にハマったこと](#WinOnVmwareDockerDesktopError)を確認してください。
+
+Docker Desktopのライセンス体系が変更になり、条件によっては有償ライセンスが必要となります。詳しくは[こちら](https://www.docker.com/pricing/faq)をご確認ください。なお、本検証はライセンス形態が変更する前に行っています。
 
 ![](pics/DockerDesktopInstall.png)
 
