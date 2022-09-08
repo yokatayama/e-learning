@@ -197,6 +197,144 @@ tkg-gpu-cluster01-tkg-gpu-cluster01-nodepool-02-czl9w-75fbdmppm   Ready    <none
 Nvidia用GPU Plugin的なものが入っていないようなので、手動で入れます。
 
 ### Nvidia GPU Operatorのインストール
-Nvidia AI Enterprise用の[公式手順](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/install-gpu-operator-nvaie.html#installing-gpu-operator)はこちらです。
+Nvidia AI Enterprise用の[公式手順](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/install-gpu-operator-nvaie.html#installing-gpu-operator)に沿ってGPU Operatorをインストールしていきます。
+
+まず、GPU入りk8sクラスタ内にNamespaceを作成します。
+
+```bash
+$ kubectl create namespace gpu-operator
+namespace/gpu-operator created
+
+$ k get ns
+NAME                           STATUS   AGE
+default                        Active   17h
+gpu-operator                   Active   4s
+kube-node-lease                Active   17h
+kube-public                    Active   17h
+kube-system                    Active   17h
+vmware-system-auth             Active   17h
+vmware-system-cloud-provider   Active   17h
+vmware-system-csi              Active   17h
+```
+
+**gridd.conf**という空ファイルを作成します。
+
+```bash
+$ touch gridd.conf
+```
+
+NLS client license tokenなるものを[NGC](https://ngc.nvidia.com/signin)から取得します。Nvidia AI Enterpriseのライセンスがないと取得できないと思いますので注意してください。Tokenは**client_configuration_token.tok**というファイル名で保存します。
+
+k8s内の*gpu-operator*ネームスペースにconfigmapを作成します。
+
+```bash
+$ k create configmap licensing-config -n gpu-operator --from-file=gridd.conf --from-file=client_configuration_token.tok
+configmap/licensing-config created
+
+$ k get cm -n gpu-operator
+NAME               DATA   AGE
+kube-root-ca.crt   1      6m35s
+licensing-config   2      30s
+
+```
+
+NGCのコンテナレジストリにアクセスできるようにするため、k8s内の*gpu-operator*ネームスペースにsecretを作成します。
+
+```
+$ kubectl create secret docker-registry ngc-secret \
+    --docker-server=nvcr.io/nvaie \
+    --docker-username='$oauthtoken' \
+    --docker-password='<YOUR-NGC-API-key>' \
+    --docker-email='<YOUR-NGC-email-address>' \
+    -n gpu-operator
+
+$ k get secret -n gpu-operator
+NAME                  TYPE                                  DATA   AGE
+default-token-zwx9k   kubernetes.io/service-account-token   3      9m18s
+ngc-secret            kubernetes.io/dockerconfigjson        1      14s
+
+```
+
+helmにrepoを登録します。
+
+```bash
+$ helm repo add nvaie --username=$oauthtoken --password=<YOUR-NGC-API-key> https://helm.ngc.nvidia.com/nvaie
+Error: looks like "https://helm.ngc.nvidia.com/nvaie" is not a valid chart repository or cannot be reached: failed to fetch https://helm.ngc.nvidia.com/nvaie/index.yaml : 401 Unauthorized
+```
+
+なぜだかわかりませんが、[https://helm.ngc.nvidia.com/nvai](https://helm.ngc.nvidia.com/nvai)にアクセスできないないので、[https://helm.ngc.nvidia.com/nvidia](https://helm.ngc.nvidia.com/nvidia)のrepoにGPU-Operatorがないか確認してみます。[ドキュメント](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-CC594C98-AC9B-4F79-B42A-47D629567B19.html)からv1.8.0のバージョンがサポートされている模様です。
+
+```bash
+$ helm repo add nvidia https://helm.ngc.nvidia.com/nvidia \
+>   --username='$oauthtoken' --password='<YOUR-NGC-API-key>' \
+>   && helm repo update
+"nvidia" has been added to your repositories
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "nvidia" chart repository
+Update Complete. ⎈Happy Helming!⎈
+
+$ helm search repo nvidia/gpu-operator --versions
+NAME                    CHART VERSION   APP VERSION     DESCRIPTION
+nvidia/gpu-operator     v1.11.1         v1.11.1         NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.11.0         v1.11.0         NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.10.1         v1.10.1         NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.10.0         v1.10.0         NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.9.1          v1.9.1          NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.9.0          v1.9.0          NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.8.2          v1.8.2          NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.8.1          v1.8.1          NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.8.0          v1.8.0          NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.7.1          v1.7.1          NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     v1.7.0          v1.7.0          NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.6.2           1.6.2           NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.6.1           1.6.1           NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.6.0           1.6.0           NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.5.2           1.5.2           NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.5.1           1.5.1           NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.5.0           1.5.0           NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.4.0           1.4.0           NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.3.0           1.3.0           NVIDIA GPU Operator creates/configures/manages ...
+nvidia/gpu-operator     1.2.0           1.2.0           NVIDIA GPU Operator creates/configures/manages ...
+
+```
+
+[https://helm.ngc.nvidia.com/nvidia](https://helm.ngc.nvidia.com/nvidia)にGPU-Operatorがあったので、こちらを今回使います。Helm Chartのオプションを確認します。
+
+```bash
+$ helm show values nvidia/gpu-operator --version 1.8.0 > helm-gpu-operator.yaml
+```
+
+*helm-gpu-operator.yaml*というファイルができますが、今回は特に変更する箇所がないので、そのままGPU-Operatorをインストールしてみます。その前に、どんなPodもデプロイできるように、ユーザーに権限を与えます。使用するサンプルマニフェストは[こちら](sample/role-binding-privileged.yaml)にあります。
+
+```bash
+$ k apply -f role-binding-privillege.yaml -n gpu-operator
+rolebinding.rbac.authorization.k8s.io/privileged created
+```
+
+HelmでGPU-Operatorをデプロイします。
+
+```bash
+$ helm install --wait gpu-operator nvidia/gpu-operator --version 1.8.0 -n gpu-operator -f helm-gpu-operator.yaml
+NAME: gpu-operator
+LAST DEPLOYED: Tue Aug 23 17:07:34 2022
+NAMESPACE: gpu-operator
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+
+何度かinstallをトライした方は、以下の様なメッセージが出るかもしれません。
+
+```bash
+$ helm install --wait gpu-operator nvidia/gpu-operator --version 1.8.0 -n gpu-operator -f helm-gpu-operator.yaml
+Error: INSTALLATION FAILED: unable to build kubernetes objects from release manifest: error validating "": error validating data: [ValidationError(ClusterPolicy.spec.devicePlugin): unknown field "securityContext" in com.nvidia.v1.ClusterPolicy.spec.devicePlugin, ValidationError(ClusterPolicy.spec.driver.repoConfig): unknown field "destinationDir" in com.nvidia.v1.ClusterPolicy.spec.driver.repoConfig, ValidationError(ClusterPolicy.spec.driver): unknown field "securityContext" in com.nvidia.v1.ClusterPolicy.spec.driver, ValidationError(ClusterPolicy.spec.migManager): unknown field "securityContext" in com.nvidia.v1.ClusterPolicy.spec.migManager, ValidationError(ClusterPolicy.spec.toolkit): unknown field "securityContext" in com.nvidia.v1.ClusterPolicy.spec.toolkit, ValidationError(ClusterPolicy.spec.validator): unknown field "securityContext" in com.nvidia.v1.ClusterPolicy.spec.validator]
+
+```
+
+この場合、以下のCRDを削除してください。
+
+```
+$ k delete crd clusterpolicies.nvidia.com
+```
 
 ### 動作確認
