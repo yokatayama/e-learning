@@ -27,3 +27,12 @@ HPE Storageと連携方法について
 - [GPUをアサインしてみる](tkgs/nvidia-ai-enterprise/k8s)  
   Nvidia AI Enterprise環境でk8sクラスタにGPUのアサイン手順
 
+### vGPU Software(GRID)
+- [AIワークロード用の仮想GPU利用について](vgpu/instruction01)  
+vGPU Software / NVIDIA AI Enterpriseの整理について
+
+- [仮想マシンでvGPUが使えるようになるまで](vgpu/installation01)  
+vGPU Managerのインストール、インストールイメージ入手、vCenter側での設定について
+
+- [vGPU用ライセンスサーバーを構築する](vgpu/installation02)  
+vGPU License Server(DLS:Delegated License Service)を構築し仮想マシンからvGPUが利用できるようにする
