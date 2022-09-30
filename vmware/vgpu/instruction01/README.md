@@ -7,7 +7,7 @@ vGPU Software v13.0より仮想GPUの利用体系が変更になり、<br>
 
 | バージョン | 日付 | 改訂者 |
 | :---: | :---: | :---: |
-| 0.1 | 2022.9.16 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
+| 0.1 | 2022.9.30 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
 |  |  |  |
 
 ## vGPU Software / NVIDIA AI Enterprise
@@ -42,7 +42,8 @@ NVIDIA AI Enterpriseでの実装方法をまとめてみると
 
 と結構選択肢が多いです。
 
-## 参考ドキュメント
+#### 参考ドキュメント
+ーーーーーー<br>
 **各エディション（vWS/vPC/vApps/vCS）の違い等はこちら**<br>
 [NVIDIA Virtual GPU Software Documentation - Display Resolution](
 https://docs.nvidia.com/grid/latest/grid-vgpu-user-guide/index.html#physical-gpu-display-resolution-handling)
@@ -55,3 +56,4 @@ https://docs.nvidia.com/grid/latest/grid-vgpu-user-guide/index.html#physical-gpu
 
 **NutanixプラットフォームでのvGPU対応**<br>
 [NVIDIA vGPU on Nutanix:](https://portal.nutanix.com/page/documents/solutions/details?targetId=TN-2046-vGPU-on-Nutanix:TN-2046-vGPU-on-Nutanix)  
+ーーーーーー<br>

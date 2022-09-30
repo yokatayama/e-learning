@@ -22,7 +22,7 @@ HPE Storageと連携方法について
   管理用Kubernetes Clusterの作成手順
 - [k8s Cluster作成してみる](tkgs/k8s_cluster)  
   ユーザー用Kubernetes Clusterの作成手順
-- [Nvidia AI Enterprise環境をセットアップしてみる](tkgs/nvidia-ai-enterprise/installation)  
+- [Nvidia AI Enterprise環境をセットアップしてみる](tkgs/nvidia-ai-enterprise)  
   Nvidia AI Enterprise環境にするための初期セットアップ手順
 - [GPUをアサインしてみる](tkgs/nvidia-ai-enterprise/k8s)  
   Nvidia AI Enterprise環境でk8sクラスタにGPUのアサイン手順

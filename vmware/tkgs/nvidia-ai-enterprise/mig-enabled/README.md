@@ -6,13 +6,19 @@ NVIDIA Ampare世代のGPUからMIG（Multi Instance GPU）の機能（いわゆ�
 
 | バージョン | 日付 | 改訂者 |
 | :---: | :---: | :---: |
-| 0.1 | 2022.9.16 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
+| 0.1 | 2022.9.30 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
 |  |  |  |
 
-## MIGの有効化
+### MIGの有効化
 MIGの有効化手順について、流れを記載しておきます。
 
-MIG対応GPUホストにアクセス。
+**参考**<br>
+ーーーーーー<br>
+NVIDIA AI Enterprise Document - MIGの有効化<br>
+[Enabling MIG Mode for a GPU](https://docs.nvidia.com/ai-enterprise/2.0/user-guide/index.html#enabling-mig-mode-for-a-gpu)<br>
+ーーーーーー<br>
+
+MIG対応GPUホストにアクセスします。
 ```
 [root@localhost:~] nvidia-smi
 Wed Aug 10 01:38:51 2022
@@ -36,7 +42,7 @@ Wed Aug 10 01:38:51 2022
 |  No running processes found                                                 |
 +-----------------------------------------------------------------------------+
 ```
-A100 GPUが搭載されていることがわかります。
+A100 GPUが搭載されていることがわかります。<br>
 0がGPU ID、複数枚搭載していれば1、2と増えて別のGPUも見えるみたいです。
 
 MIG機能の有効化、-iの後はGPU IDを指定します。
@@ -47,12 +53,51 @@ Reboot the system or try nvidia-smi --gpu-reset to make MIG mode effective on GP
 All done.
 ```
 
-ESXiホストの再起動
+ESXiホストの再起動し、再度smiコマンドで見てみます。
+
 ```
-[root@localhost:~] nvidia-smi -i 0 --query-gpu=pci.bus_id,mig.mode.current --format=csv
-pci.bus_id, mig.mode.current
-00000000:0F:00.0, Enabled
+[root@localhost:~] nvidia-smi
+Wed Aug 10 08:08:08 2022
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 510.47.03    Driver Version: 510.47.03    CUDA Version: N/A      |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  NVIDIA A100-PCI...  On   | 00000000:0F:00.0 Off |                   On |
+| N/A   58C    P0   110W / 250W |      0MiB / 40960MiB |     N/A      Default |
+|                               |                      |              Enabled |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| MIG devices:                                                                |
++------------------+----------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |         Memory-Usage |        Vol|         Shared        |
+|      ID  ID  Dev |           BAR1-Usage | SM     Unc| CE  ENC  DEC  OFA  JPG|
+|                  |                      |        ECC|                       |
+|==================+======================+===========+=======================|
+|  No MIG devices found                                                       |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
 ```
+右端の"MIG.M"欄がEnabledになっているので、MIGが有効化されたことがわかります。
+MIGの分割はこの時点では実施できていないため、
+真ん中”MIG devices”欄が”No MIG devices found”になっています。
+
+
+### GI（GPUインスタンス）とCI（コンピュートインスタンス）の作成
+A100にはGPC(Graohics Processing Cluster)と呼ばれる小さなGPU単位に、全体のGPUを分割します。
+このGPUがA100には7つあるため最大7分割となります。
+まずMIGによるGPUの分割は、GI(GPUインスタンス)の単位で作成します。
+作成可能なインスタンスの種類は、-lgipオプション（List GPU Instance Profile）で確認します。
 
 ```
 [root@localhost:~] nvidia-smi mig -lgip
@@ -80,6 +125,8 @@ pci.bus_id, mig.mode.current
 |                                                             7     1     1   |
 +-----------------------------------------------------------------------------+
 ```
+このGPUインスタンス（GI）の中に、コンピュートインスタンス（CI）を作成してMIGによる分割デバイスとして利用可能になります。
+例として、"1g.5gb" は1つのGPCと5GBのメモリを備える最小のインスタンスとなります。
 
 ```
 [root@localhost:~] nvidia-smi mig -cgi 9,19,14,19
@@ -88,6 +135,9 @@ Successfully created GPU instance ID 11 on GPU  0 using profile MIG 1g.5gb (ID 1
 Successfully created GPU instance ID  6 on GPU  0 using profile MIG 2g.10gb (ID 14)
 Successfully created GPU instance ID 12 on GPU  0 using profile MIG 1g.5gb (ID 19)
 ```
+GIのIDが "9" = "3g.20gb"、"19" = "1g.5gb"等のGIを作成します。<br>
+(cgi: create gpu instance)
+
 ```
 [root@localhost:~] nvidia-smi mig -lgi
 +-------------------------------------------------------+
@@ -104,11 +154,35 @@ Successfully created GPU instance ID 12 on GPU  0 using profile MIG 1g.5gb (ID 1
 |   0  MIG 3g.20gb          9        1          4:4     |
 +-------------------------------------------------------+
 ```
+作成したGIを確認。(lgi: List GPU Instance)
+
+```
+[root@localhost:~] nvidia-smi mig -lcip
++--------------------------------------------------------------------------------------+
+| Compute instance profiles:                                                           |
+| GPU     GPU       Name             Profile  Instances   Exclusive       Shared       |
+|       Instance                       ID     Free/Total     SM       DEC   ENC   OFA  |
+|         ID                                                          CE    JPEG       |
+|======================================================================================|
+|   0      9       MIG 1g.5gb           0*     0/1           14        0     0     0   |
+|                                                                      1     0         |
++--------------------------------------------------------------------------------------+
+|   0      3       MIG 1c.2g.10gb       0      0/2           14        1     0     0   |
+|                                                                      2     0         |
++--------------------------------------------------------------------------------------+
+|   0      3       MIG 2g.10gb          1*     0/1           28        1     0     0   |
+|                                                                      2     0         |
++--------------------------------------------------------------------------------------+
+```
+作成可能なCIを確認してみます。
 
 ```
 [root@localhost:~] nvidia-smi mig -gi 11 -cci 0
 Successfully created compute instance ID  0 on GPU  0 GPU instance ID 11 using profile MIG 1g.5gb (ID  0)
 ```
+Instance ID "11" のGPU Instanceに対して、Profile ID "0" のCompute Instanceを作成してみます。<br>
+(cci: Create Compute Instance)
+
 ```
 [root@localhost:~] nvidia-smi mig -gi 11 -lci
 +--------------------------------------------------------------------+
@@ -120,12 +194,14 @@ Successfully created compute instance ID  0 on GPU  0 GPU instance ID 11 using p
 |   0     11       MIG 1g.5gb           0         0          0:1     |
 +--------------------------------------------------------------------+
 ```
+作成できてる感じですね。
 
 ```
 [root@localhost:~] nvidia-smi -L
 GPU 0: NVIDIA A100-PCIE-40GB (UUID: GPU-14ac2834-0d81-0508-69eb-e25264c08d21)
   MIG 1g.5gb      Device  0: (UUID: MIG-b6cd45f2-9655-5269-9b96-65446729d5dc)
 ```
+MIGデバイスとして認識していることも確認できました。
 
 ```
 [root@localhost:~] nvidia-smi
@@ -161,42 +237,8 @@ Wed Aug 10 08:08:08 2022
 |  No running processes found                                                 |
 +-----------------------------------------------------------------------------+
 ```
-
-```
-[root@localhost:~] nvidia-smi mig -gi 12 -lci
-No compute instances found: Not Found
-```
-
-```
-[root@localhost:~] nvidia-smi mig -gi 12 -cci 0
-Successfully created compute instance ID  0 on GPU  0 GPU instance ID 12 using profile MIG 1g.5gb (ID  0)
-```
-
-```
-[root@localhost:~] nvidia-smi mig -gi 12 -lci
-+--------------------------------------------------------------------+
-| Compute instances:                                                 |
-| GPU     GPU       Name             Profile   Instance   Placement  |
-|       Instance                       ID        ID       Start:Size |
-|         ID                                                         |
-|====================================================================|
-|   0     12       MIG 1g.5gb           0         0          0:1     |
-+--------------------------------------------------------------------+
-```
-
-```
-[root@localhost:~] nvidia-smi mig -i 0 -lci
-+--------------------------------------------------------------------+
-| Compute instances:                                                 |
-| GPU     GPU       Name             Profile   Instance   Placement  |
-|       Instance                       ID        ID       Start:Size |
-|         ID                                                         |
-|====================================================================|
-|   0     11       MIG 1g.5gb           0         0          0:1     |
-+--------------------------------------------------------------------+
-|   0     12       MIG 1g.5gb           0         0          0:1     |
-+--------------------------------------------------------------------+
-```
+MIGデバイス確認できてますね。
+せっかくなのでもう少しMIGデバイス用にCIを作ってみたいと思います。
 
 ```
 [root@localhost:~] nvidia-smi mig -i 0 -lgi
@@ -214,16 +256,59 @@ Successfully created compute instance ID  0 on GPU  0 GPU instance ID 12 using p
 |   0  MIG 3g.20gb          9        1          4:4     |
 +-------------------------------------------------------+
 ```
+改めて、作成済みのGIを確認。
+
+```
+[root@localhost:~] nvidia-smi mig -gi 12 -lci
+No compute instances found: Not Found
+```
+Instance ID "12" のGPU Instanceに対して、Compute Instanceはまだ存在していないことがわかります。
+
+```
+[root@localhost:~] nvidia-smi mig -gi 12 -cci 0
+Successfully created compute instance ID  0 on GPU  0 GPU instance ID 12 using profile MIG 1g.5gb (ID  0)
+```
+Instance ID "12" のGPU Instanceに対して、Profile ID "0" のCompute Instanceを作成します。<br>
+
+```
+[root@localhost:~] nvidia-smi mig -gi 12 -lci
++--------------------------------------------------------------------+
+| Compute instances:                                                 |
+| GPU     GPU       Name             Profile   Instance   Placement  |
+|       Instance                       ID        ID       Start:Size |
+|         ID                                                         |
+|====================================================================|
+|   0     12       MIG 1g.5gb           0         0          0:1     |
++--------------------------------------------------------------------+
+```
+作成できました。
+
+```
+[root@localhost:~] nvidia-smi mig -i 0 -lci
++--------------------------------------------------------------------+
+| Compute instances:                                                 |
+| GPU     GPU       Name             Profile   Instance   Placement  |
+|       Instance                       ID        ID       Start:Size |
+|         ID                                                         |
+|====================================================================|
+|   0     11       MIG 1g.5gb           0         0          0:1     |
++--------------------------------------------------------------------+
+|   0     12       MIG 1g.5gb           0         0          0:1     |
++--------------------------------------------------------------------+
+```
+MIGとして利用できるCIが2つに増えたことが確認できました。
 
 ```
 [root@localhost:~] nvidia-smi mig -gi 6 -cci 0
 Successfully created compute instance ID  0 on GPU  0 GPU instance ID  6 using profile MIG 1c.2g.10gb (ID  0)
 ```
+Instance ID "6" のGPU Instanceに対して、Profile ID "0" のCompute Instanceを作成します。<br>
 
 ```
 [root@localhost:~] nvidia-smi mig -gi 1 -cci 0
 Successfully created compute instance ID  0 on GPU  0 GPU instance ID  1 using profile MIG 1c.3g.20gb (ID  0)
 ```
+Instance ID "1" のGPU Instanceに対して、Profile ID "0" のCompute Instanceを作成します。<br>
 
 ```
 [root@localhost:~] nvidia-smi mig -i 0 -lci
@@ -241,37 +326,10 @@ Successfully created compute instance ID  0 on GPU  0 GPU instance ID  1 using p
 +--------------------------------------------------------------------+
 |   0      1       MIG 1c.3g.20gb       0         0          0:1     |
 ```
+GIとCIがきちんと紐づきこれで使える状態になったはず、、、。<br>
+GIとCIは今回のように "1:1" の関係でも良いですし、
+同一GIの中に複数CIを作成することによって、各CIは個々の専用の演算器(GPC)を持つものの、
+メモリを共有したい場合などに "1:多" で利用するみたいです。
 
-![](pics/pic01.png)
-
-
-
-
-
-
-
-
-
-
-### 参考ドキュメント
-NVIDIA AI Enterprise Document - MIGの有効化
-[Enabling MIG Mode for a GPU：](https://docs.nvidia.com/ai-enterprise/2.0/user-guide/index.html#enabling-mig-mode-for-a-gpu)
-
-### Tips
-
-きちんと紐づけておかないと、helmやpodmanからNGCコンテナイメージの取得ができません。<br>
-Ex.
-```
-docker login nvcr.io                                          
-Authenticating with existing credentials...
-Login Succeeded
-```
-と、NGCレポジトリ自体にはアクセスできるのですが、
-```
-$ helm repo add nvaie --username=$oauthtoken --password=<YOUR-NGC-API-key> https://helm.ngc.nvidia.com/nvaie
-Error: looks like "https://helm.ngc.nvidia.com/nvaie" is not a valid chart repository or cannot be reached: failed to fetch https://helm.ngc.nvidia.com/nvaie/index.yaml : 401 Unauthorized
-```
-とUnauthorizedされず、コンテナイメージを取得することができません。
-
-6.6 Manage Helm Charts Using the Helm CLI：
-https://docs.nvidia.com/ngc/ngc-private-registry-user-guide/index.html#managing-helm-charts-using-helm-cli
+![](pics/pic01.png)<br>
+vSphere Clientから見るとこんな感じ。
