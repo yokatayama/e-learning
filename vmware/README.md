@@ -22,8 +22,17 @@ HPE Storageと連携方法について
   管理用Kubernetes Clusterの作成手順
 - [k8s Cluster作成してみる](tkgs/k8s_cluster)  
   ユーザー用Kubernetes Clusterの作成手順
-- [Nvidia AI Enterprise環境をセットアップしてみる](tkgs/nvidia-ai-enterprise/installation)  
+- [Nvidia AI Enterprise環境をセットアップしてみる](tkgs/nvidia-ai-enterprise)  
   Nvidia AI Enterprise環境にするための初期セットアップ手順
 - [GPUをアサインしてみる](tkgs/nvidia-ai-enterprise/k8s)  
   Nvidia AI Enterprise環境でk8sクラスタにGPUのアサイン手順
 
+### vGPU Software(GRID)
+- [AIワークロード用の仮想GPU利用について](vgpu/instruction01)  
+vGPU Software / NVIDIA AI Enterpriseの整理について
+
+- [仮想マシンでvGPUが使えるようになるまで](vgpu/installation01)  
+vGPU Managerのインストール、インストールイメージ入手、vCenter側での設定について
+
+- [vGPU用ライセンスサーバーを構築する](vgpu/installation02)  
+vGPU License Server(DLS:Delegated License Service)を構築し仮想マシンからvGPUが利用できるようにする
