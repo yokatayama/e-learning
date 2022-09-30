@@ -9,7 +9,7 @@ NGCレポジトリを有効に利用するた、NGCアカウントの登録が�
 
 | バージョン | 日付 | 改訂者 |
 | :---: | :---: | :---: |
-| 0.1 | 2022.9.16 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
+| 0.1 | 2022.9.30 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
 |  |  |  |
 
 ## NVIDIA AI EnterpriseのNFRライセンスの取得

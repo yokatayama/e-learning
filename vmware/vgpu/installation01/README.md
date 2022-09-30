@@ -6,7 +6,7 @@ ESXi上で仮想GPUを利用する場合は、vGPU Managerのインストール�
 
 | バージョン | 日付 | 改訂者 |
 | :---: | :---: | :---: |
-| 0.1 | 2022.9.16 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
+| 0.1 | 2022.9.30 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
 |  |  |  |
 
 ## NVIDIA Application Hub へのログイン
@@ -138,6 +138,6 @@ VIBをインストールしても、上記”直接共有”等々の設定を�
 <br>
 <br>
 **vGPUアサインした仮想マシンが起動しない事象**<br>
-![](pics/pic13.png)
+![](pics/pic13.png)<br>
 vCenterとESXiのバージョンの差異がある場合に発生する場合もあるみたいです。<br>
 KBはこちら：[vSphere ESXi 7.0.3 - 7.0 Update 3 bug with NVidia Grid vGPU](https://communities.vmware.com/t5/Horizon-Desktops-and-Apps/vSphere-ESXi-7-0-3-7-0-Update-3-bug-with-NVidia-Grid-vGPU/td-p/2873904)

@@ -6,7 +6,7 @@
 
 | バージョン | 日付 | 改訂者 |
 | :---: | :---: | :---: |
-| 0.1 | 2022.9.16 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
+| 0.1 | 2022.9.30 | [Yoshihiko Katayama @HPE Japan Presales](yoshihiko.katayama@hpe.com) |
 |  |  |  |
 
 ## vGPUライセンスサーバーの整理
