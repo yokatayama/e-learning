@@ -29,5 +29,5 @@ Tanzu K8s Grid OVF用のコンテンツライブラリの事前作成
   MIGの有効化手順について、GPU Instance、Compute Instance作成
 
 ### NVIDIA NGC(AI Development Catalog)
-- [NGCアカウントの登録](nvidia-ai-enterprise/ngc-register)  
+- [NGCアカウントの登録](ngc-register)  
   NPNアカウントの登録、API Keyの取得方法について
