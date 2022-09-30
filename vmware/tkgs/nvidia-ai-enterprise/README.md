@@ -23,3 +23,11 @@ Tanzu K8s Grid OVF用のコンテンツライブラリの事前作成
 
 - [TKGs構築⑥ - SuperVisor Clusterの作成後の作業](nvidia-ai-enterprise/Installation06)<br>
 名前空間を作成してDeveloper側に引き渡す前までの作業
+
+### MIG(Multi Instance GPU)
+- [MIGの有効化](nvidia-ai-enterprise/mig-enabled)  
+  MIGの有効化手順について、GPU Instance、Compute Instance作成
+
+### NVIDIA NGC(AI Development Catalog)
+- [NGCアカウントの登録](nvidia-ai-enterprise/ngc-register)  
+  NPNアカウントの登録、API Keyの取得方法について
