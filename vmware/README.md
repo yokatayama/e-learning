@@ -16,11 +16,11 @@ HPE Storageと連携方法について
 検証の際に出会った問題等
 
 ### vSphere with Tanzu / Tanzu K8s Grid Service(TKGS)
-- [基本セットアップ](tkgs/installation)  
+- [TKGs基本セットアップ](tkgs/installation)  
   vSphere with K8s / Tanzu K8s Grid Service 初期セットアップ手順
-- [Supervisor Cluster作成してみる](tkgs/s_cluster)  
+- [TKGs - Supervisor Cluster作成してみる](tkgs/s_cluster)  
   K8sワークロードの有効化、Supervisor Cluster(管理用Kubernetes Cluster)の作成手順
-- [k8s Cluster作成してみる](tkgs/k8s_cluster)  
+- [TKGs - k8s Cluster作成してみる](tkgs/k8s_cluster)  
   ユーザー用Kubernetes Clusterの作成手順
 - [Nvidia AI Enterprise環境をセットアップしてみる](tkgs/nvidia-ai-enterprise)  
   Nvidia AI Enterprise環境にするための初期セットアップ手順
